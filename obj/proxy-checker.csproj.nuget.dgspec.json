@@ -1,0 +1,61 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/alumni/coding/proxy-checker/proxy-checker.csproj": {}
+  },
+  "projects": {
+    "/home/alumni/coding/proxy-checker/proxy-checker.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/alumni/coding/proxy-checker/proxy-checker.csproj",
+        "projectName": "proxy-checker",
+        "projectPath": "/home/alumni/coding/proxy-checker/proxy-checker.csproj",
+        "packagesPath": "/home/alumni/.nuget/packages/",
+        "outputPath": "/home/alumni/coding/proxy-checker/obj/",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "/usr/share/dotnet/sdk/NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "/home/alumni/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.0": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.0": {
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/3.0.100/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
