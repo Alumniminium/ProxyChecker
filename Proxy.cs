@@ -9,7 +9,7 @@ namespace SockPuppet
         public ushort Port;
         public int Timeout;
         public bool Alive;
-        internal bool Safe() => ogresponse == response;
+        internal bool Safe => ogresponse == response;
         private string response;
 
         // CAREFUL
