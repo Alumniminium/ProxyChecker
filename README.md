@@ -8,7 +8,7 @@ checks if the proxy is:
 
 ### Usage
 
-proxy-checker -i ProxyList.txt -o WorkingProxies.txt -t AmountOfThreads
+`proxy-checker -i ProxyList.txt -o WorkingProxies.txt -t AmountOfThreads`
 
 additionally, it will output information while its running in the following format:
 
