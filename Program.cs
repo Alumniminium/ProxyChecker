@@ -19,16 +19,16 @@ namespace proxy_checker
 
         private static (string input, string output, int threads, int timeout) ParseInput(string[] args)
         {
-            var inputIndex = Array.IndexOf(args, "-i");
+            var inputIndex = Array.IndexOf(args, "-input");
             var inputFile = args[inputIndex + 1].Trim();
 
-            var outputIndex = Array.IndexOf(args, "-o");
+            var outputIndex = Array.IndexOf(args, "-output");
             var outputFile = args[outputIndex + 1].Trim();
 
-            var threadIndex = Array.IndexOf(args, "-t");
+            var threadIndex = Array.IndexOf(args, "-threads");
             var threadCount = int.Parse(args[threadIndex + 1].Trim());
 
-            var timeoutIndex = Array.IndexOf(args, "-t");
+            var timeoutIndex = Array.IndexOf(args, "-timeout");
             var timeout = int.Parse(args[timeoutIndex + 1].Trim());
 
             return (inputFile, outputFile, threadCount, timeout);
