@@ -13,7 +13,7 @@ checks if the proxy is:
 ### Usage
 
 ```
-Usage: proxy-checker -input [1] -output [2] -threads [3] -timeout [4]
+Usage: SockPuppet -input [1] -output [2] -threads [3] -timeout [4]
 1: path to proxy list (format: ip:port)
 2: path to output file containing all the working proxies
 3: amount of proxies to try at the same time (sane values: [5])
@@ -22,7 +22,7 @@ Usage: proxy-checker -input [1] -output [2] -threads [3] -timeout [4]
 ```
 
 #### Example:
-```proxy-checker -input pastebinlist.txt -output /home/trrbl/working-proxies -threads 128 -timeout 7500```
+```SockPuppet -input pastebinlist.txt -output /home/trrbl/working-proxies -threads 128 -timeout 7500```
 
 additionally, it will output information while its running in the following format:
 
