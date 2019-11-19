@@ -16,6 +16,7 @@ additionally, it will output information while its running in the following form
 [Down!]127.0.0.1:88
 [Down!]192.168.0.1:80
 [ Up! ]8.19.55.12:8080
-...
+```
 
-The IP starts at string index 8 on every line - you could use `cut -c8-22` to get the `IP:PORT` part on Unix.
+The IP starts at string index 8 on every line - you could use 
+`cut -c8-22` to get the `IP:PORT` part on Unix.
