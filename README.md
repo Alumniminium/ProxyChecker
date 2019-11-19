@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="100" height="100" src="sockpuppet.jpg">
+  <img width="100" height="100" src="Assets/sockpuppet.jpg">
 </p>
 
 # SockPuppet - A SOCKS Prxy Checker

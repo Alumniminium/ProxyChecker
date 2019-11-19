@@ -9,7 +9,7 @@ namespace SockPuppet
         static void Main(string[] args)
         {
             if (args.Length == 0)
-                args = new[] { "-input", "list.txt", "-output", "working.txt", "-threads", "24", "-timeout", "10000" };
+                args = new[] { "-input", "Assets/list.txt", "-output", "Assets/working.txt", "-threads", "24", "-timeout", "10000" };
 
             try
             {
