@@ -29,4 +29,10 @@ additionally, it will output information while its running in the following form
 ```
 
 The IP starts at string index 8 on every line - you could use 
-`cut -c8-22` to get the `IP:PORT` part on Unix.
+`cut -c8-22` to get 
+```
+127.0.0.1:88
+192.168.0.1:80
+8.19.55.12:8080
+```
+on Unix.
