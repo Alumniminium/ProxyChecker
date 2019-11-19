@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading;
 using System.Collections.Concurrent;
 
-namespace proxy_checker
+namespace SockPuppet
 {
     public class ProxyTester
     {
@@ -35,8 +35,8 @@ namespace proxy_checker
                 var proxy = new Proxy(ip, port, timeout);
                 Proxies.Add(proxy);
 
-                if (Proxies.Count > threadCount * 2) // don't consume too much ram
-                    LoadBlock.WaitOne();
+                if (Proxies.Count > threadCount * 2)
+                    LoadBlock.WaitOne();// don't consume too much ram, list could potentially be gigabytes
             }
         }
         private static void StartThreads(int threadCount)

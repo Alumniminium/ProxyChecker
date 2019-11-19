@@ -1,8 +1,7 @@
-using System;
 using System.IO;
 using System.Net;
 
-namespace proxy_checker
+namespace SockPuppet
 {
     public class Proxy
     {

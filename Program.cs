@@ -2,9 +2,9 @@
 using System.Threading;
 using System.Reflection;
 
-namespace proxy_checker
+namespace SockPuppet
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
         {
