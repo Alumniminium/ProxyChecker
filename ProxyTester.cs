@@ -12,10 +12,9 @@ namespace proxy_checker
         public static BlockingCollection<Proxy> Proxies = new BlockingCollection<Proxy>();
         public static StreamReader Reader;
         public static StreamWriter Writer;
-        public static string InputFile, OutputFile;
         public static AutoResetEvent LoadBlock = new AutoResetEvent(true);
 
-        public static void TestList(string inputPath, string outputPath, int threadCount)
+        public static void TestList(string inputPath, string outputPath, int threadCount, int timeout)
         {
             ThreadCount = threadCount;
             Reader = new StreamReader(inputPath);
@@ -33,10 +32,10 @@ namespace proxy_checker
                 var ip = parts[0];
                 var port = ushort.Parse(parts[1]);
 
-                var proxy = new Proxy(ip, port);
+                var proxy = new Proxy(ip, port, timeout);
                 Proxies.Add(proxy);
 
-                if (Proxies.Count > threadCount * 2) // don't consume too ram
+                if (Proxies.Count > threadCount * 2) // don't consume too much ram
                     LoadBlock.WaitOne();
             }
         }
