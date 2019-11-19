@@ -8,15 +8,17 @@ checks if the proxy is:
 
 ### Usage
 
-`Usage: proxy-checker -input [1] -output [2] -threads [3] -timeout [4]
+```
+Usage: proxy-checker -input [1] -output [2] -threads [3] -timeout [4]
 1: path to proxy list (format: ip:port)
 2: path to output file containing all the working proxies
 3: amount of proxies to try at the same time (sane values: [5])
 4: how long to wait for a response before giving up in milliseconds (sane values: [5])
-5: Sane thread counts: 8-16. Sane Timeout durations: 1000-10000`
+5: Sane thread counts: 8-16. Sane Timeout durations: 1000-10000
+```
 
 #### Example:
-`proxy-checker -input /home/trrbl/pastebinlist.txt -output /home/trrbl/working-proxies -threads 128 -timeout 7500`
+```proxy-checker -input pastebinlist.txt -output /home/trrbl/working-proxies -threads 128 -timeout 7500```
 
 additionally, it will output information while its running in the following format:
 
