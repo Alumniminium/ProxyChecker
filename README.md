@@ -1,4 +1,8 @@
-# Simple Proxy Checker
+<p align="center">
+  <img width="100" height="100" src="sockpuppet.jpg">
+</p>
+
+# SockPuppet - A SOCKS Prxy Checker
 
 Checks the average line-seperated IP:PORT formatted proxy lists you can find on pastebin,
 checks if the proxy is:
