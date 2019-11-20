@@ -8,21 +8,30 @@ namespace SockPuppet
     {
         static void Main(string[] args)
         {
-            if (args.Length == 0)
-                args = new[] { "-input", "Assets/list.txt", "-output", "Assets/working.txt", "-threads", "24", "-timeout", "10000" };
+            if (args.Length == 0) // helps with debugging
+            {
+                args = new[]
+                {
+                    "-input", "Assets/list.txt",
+                    "-output", "Assets/working.txt",
+                    "-threads", "24",
+                    "-timeout", "10000"
+                };
+            }
 
             try
             {
                 var (input, output, threads, timeout) = ParseInput(args);
                 ProxyTester.TestList(input, output, threads, timeout);
 
+                // hahahah overengineered the ProxyTester
                 while (ProxyTester.Proxies.Count > 0)
                     Thread.Sleep(1);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                var ass = Assembly.GetExecutingAssembly().GetName();
+                var ass = Assembly.GetExecutingAssembly().GetName(); // get dat ass ( ͡° ͜ʖ ͡°)
                 Console.WriteLine($"{ass.Name}, Version {ass.Version} Arch: {ass.ProcessorArchitecture}");
                 Console.WriteLine();
                 Console.WriteLine($"Usage: {ass.Name} -input [1] -output [2] -threads [3] -timeout [4]");
@@ -35,6 +44,7 @@ namespace SockPuppet
             }
         }
 
+        // Ladies and gentlemen: The most lazy commandline args parser.
         private static (string, string, int, int) ParseInput(string[] args)
         {
             var inputIndex = Array.IndexOf(args, "-input");

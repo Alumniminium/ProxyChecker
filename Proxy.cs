@@ -9,11 +9,9 @@ namespace SockPuppet
         public ushort Port;
         public int Timeout;
         public bool Alive;
-        internal bool Safe => ogresponse == response;
-        private string response;
-
-        // CAREFUL
-        private static string ogresponse = new WebClient().DownloadString("https://her.st").Trim();
+        internal bool Safe => _responseWithoutProxy == _response;
+        private string _response;
+        private static string _responseWithoutProxy = new WebClient().DownloadString("https://her.st").Trim();
 
         public Proxy(string ip, ushort port, int timeout)
         {
@@ -35,7 +33,7 @@ namespace SockPuppet
 
                 WebResponse webResponse = request.GetResponse();
                 var reader = new StreamReader(webResponse.GetResponseStream());
-                response = reader.ReadToEnd().Trim();
+                _response = reader.ReadToEnd().Trim();
                 Alive = true;
             }
             catch
