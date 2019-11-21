@@ -2,9 +2,9 @@
 using System.IO;
 using System.Net;
 
-namespace IP2Location.Net
+namespace SockPuppet.IP2Location
 {
-    public sealed class NetworkAddressLocator_IP2LocationCsv : INetworkAddressLocator
+    public sealed class NetworkAddressLocator_IP2LocationCsv : IpLocator
     {
         private readonly RecordIP4[] m_records;
 
@@ -30,7 +30,7 @@ namespace IP2Location.Net
             GC.Collect();
         }
 
-        public Location Lookup(IPAddress ip)
+        public Location Locate(IPAddress ip)
         {
             var ipValue = ip.MapToIPv4().GetIPv4Value();
             var result = m_records.BinarySearch(RecordIP4.GetKey, ipValue);

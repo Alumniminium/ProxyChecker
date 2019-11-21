@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
-namespace IP2Location.Net
+namespace SockPuppet.IP2Location
 {
     internal static class CsvReader
     {

@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
 
-namespace IP2Location.Net
+namespace SockPuppet.IP2Location
 {
     public struct Coordinates : IEquatable<Coordinates>
     {

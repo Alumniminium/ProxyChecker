@@ -6,9 +6,9 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace IP2Location.Net
+namespace SockPuppet.IP2Location
 {
-    public sealed class NetworkAddressLocator_IP2LocationBin : INetworkAddressLocator, IDisposable
+    public sealed class BinaryDbClient : IpLocator, IDisposable
     {
         // see https://github.com/chrislim2888/IP2Location-C-Library/blob/master/libIP2Location/IP2Location.c
 
@@ -20,7 +20,7 @@ namespace IP2Location.Net
         private readonly uint m_ipv4DataCount;
         private readonly uint m_ipv4IndexAddr;
 
-        public unsafe NetworkAddressLocator_IP2LocationBin(string filePath)
+        public unsafe BinaryDbClient(string filePath)
         {
             m_memoryMappedFile = MemoryMappedFile.CreateFromFile(filePath, FileMode.Open);
             m_memoryMappedView = m_memoryMappedFile.CreateViewAccessor();
@@ -28,7 +28,7 @@ namespace IP2Location.Net
             m_memoryMappedView.SafeMemoryMappedViewHandle.AcquirePointer(ref filePtr);
             try
             {
-                var header = (FileHeader*) filePtr;
+                var header = (FileHeader*)filePtr;
                 m_databaseType = header->DatabaseType;
                 m_databaseColumn = header->DatabaseColumn;
                 m_ipv4DataAddr = header->Ipv4DataBaseAddr;
@@ -43,7 +43,7 @@ namespace IP2Location.Net
 
         private const uint MAX_IPV4_RANGE = 4294967295U;
 
-        public unsafe Location Lookup(IPAddress ip)
+        public unsafe Location Locate(IPAddress ip)
         {
             // https://github.com/chrislim2888/IP2Location-C-Library/blob/master/libIP2Location/IP2Location.c
             // IP2Location_get_ipv4_record()
@@ -127,7 +127,7 @@ namespace IP2Location.Net
         private static unsafe float ReadFloat(byte* baseAddr, long position1)
         {
             var ptr = baseAddr + position1 - 1;
-            var result = *((float*) ptr);
+            var result = *((float*)ptr);
             return result;
         }
 
@@ -135,7 +135,7 @@ namespace IP2Location.Net
         private static unsafe uint Read32(byte* baseAddr, uint position1)
         {
             var ptr = baseAddr + position1 - 1;
-            var result = *((uint*) ptr);
+            var result = *((uint*)ptr);
             return result;
         }
 

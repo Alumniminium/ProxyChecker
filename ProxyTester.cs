@@ -2,11 +2,14 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Collections.Concurrent;
+using SockPuppet.IP2Location;
+using System.Net;
 
 namespace SockPuppet
 {
     public class ProxyTester
     {
+        public static IpLocator Locator = new BinaryDbClient("Assets/ipdb.bin");
         public static Thread[] Threads;
         public static int ThreadCount;
         public static BlockingCollection<Proxy> Proxies = new BlockingCollection<Proxy>();
@@ -63,6 +66,8 @@ namespace SockPuppet
                     Writer?.WriteLine(proxy);
 
                 Console.WriteLine($"{(proxy.Alive ? "[ Up! ]" : "[Down!]")}{proxy}");
+                var location = Locator.Locate(IPAddress.Parse(proxy.IP));
+                Console.WriteLine($"{proxy.IP} infos: {Environment.NewLine}Region: {location.Region} {location.Country}, City: {location.City}");
             }
         }
     }

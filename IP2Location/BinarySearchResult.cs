@@ -1,4 +1,4 @@
-﻿namespace IP2Location.Net
+﻿namespace SockPuppet.IP2Location
 {
     internal struct BinarySearchResult
     {
