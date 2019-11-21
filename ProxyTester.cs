@@ -60,7 +60,7 @@ namespace SockPuppet
                 proxy.Test();
 
                 if (proxy.Alive && proxy.Safe)
-                    Writer.WriteLine(proxy);
+                    Writer?.WriteLine(proxy);
 
                 Console.WriteLine($"{(proxy.Alive ? "[ Up! ]" : "[Down!]")}{proxy}");
             }
