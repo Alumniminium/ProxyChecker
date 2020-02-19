@@ -1,50 +1,33 @@
+using System.Threading.Tasks;
 using System;
 using System.IO;
 using System.Threading;
 using System.Collections.Concurrent;
-using SockPuppet.IP2Location;
 using System.Net;
 
 namespace SockPuppet
 {
-    public class ProxyTester
+    public static class ProxyTester
     {
-        public static IpLocator Locator = new BinaryDbClient("Assets/ipdb.bin");
         public static Thread[] Threads;
         public static int ThreadCount;
-        public static BlockingCollection<Proxy> Proxies = new BlockingCollection<Proxy>();
-        public static StreamReader Reader;
-        public static StreamWriter Writer;
-        public static AutoResetEvent LoadBlock = new AutoResetEvent(true);
-
-        public static void TestList(string inputPath, string outputPath, int threadCount, int timeout)
+        public static BlockingCollection<Proxy> Proxies;
+        public static int Timeout;
+        private static TaskCompletionSource<int> Tcs;
+        public static Task TestListAsync(string inputPath, string outputPath, int threadCount, int timeout)
         {
             ThreadCount = threadCount;
-            Reader = new StreamReader(inputPath);
-            if (!string.IsNullOrEmpty(outputPath))
-            {
-                Writer = new StreamWriter(outputPath, false);
-                Writer.AutoFlush = true;
-            }
+            Timeout = timeout;
+            Tcs = new TaskCompletionSource<int>();
+            Proxies = new BlockingCollection<Proxy>(ThreadCount * 2);
             StartThreads(threadCount);
-
-            while (!Reader.EndOfStream)
-            {
-                var line = Reader.ReadLine().Trim();
-                var parts = line.Split(':');
-                var ip = parts[0];
-                var port = ushort.Parse(parts[1]);
-
-                var proxy = new Proxy(ip, port, timeout);
-                Proxies.Add(proxy);
-
-                if (Proxies.Count > threadCount * 2)
-                    LoadBlock.WaitOne();// don't consume too much ram, list could potentially be gigabytes
-            }
+            Database.Load(inputPath, Tcs);
+            return Tcs.Task;
         }
+
         private static void StartThreads(int threadCount)
         {
-            Threads = new Thread[threadCount];
+            Threads = new Thread[threadCount + 1];
             for (int i = 0; i < threadCount; i++)
             {
                 Threads[i] = new Thread(WorkLoop);
@@ -52,23 +35,41 @@ namespace SockPuppet
                 Threads[i].Start();
             }
         }
-
         private static void WorkLoop()
         {
             foreach (var proxy in Proxies.GetConsumingEnumerable())
             {
-                if (Proxies.Count < ThreadCount * 2)
-                    LoadBlock.Set();
-
-                proxy.Test();
-
-                if (proxy.Alive && proxy.Safe)
-                    Writer?.WriteLine(proxy);
-
+                PerformTest(proxy);
                 Console.WriteLine($"{(proxy.Alive ? "[ Up! ]" : "[Down!]")}{proxy}");
-                var location = Locator.Locate(IPAddress.Parse(proxy.IP));
-                Console.WriteLine($"{proxy.IP} infos: {Environment.NewLine}Region: {location.Region} {location.Country}, City: {location.City}");
+                Database.Trace(proxy);
             }
+        }
+
+        private static void PerformTest(Proxy proxy)
+        {
+            try
+            {
+                var request = GenerateRequest(proxy);
+                var response = request.GetResponse();
+                var reader = new StreamReader(response.GetResponseStream());
+                proxy.response = reader.ReadToEnd();
+                proxy.Alive = true;
+            }
+            catch
+            {
+                proxy.Alive = false;
+            }
+        }
+
+        private static HttpWebRequest GenerateRequest(Proxy proxy)
+        {
+            var webProxy = new WebProxy(proxy.IP.ToString(), proxy.Port);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://her.st");
+            webProxy.BypassProxyOnLocal = false; // this is gonna run on the her.st server
+            request.Proxy = webProxy;
+            request.UserAgent = "ProxyTester Version: 1";
+            request.Timeout = Timeout;
+            return request;
         }
     }
 }

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Threading;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace SockPuppet
 {
     public class Program
     {
-        static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             if (args.Length == 0) // helps with debugging
             {
@@ -22,11 +23,8 @@ namespace SockPuppet
             try
             {
                 var (input, output, threads, timeout) = ParseInput(args);
-                ProxyTester.TestList(input, output, threads, timeout);
-
-                // hahahah overengineered the ProxyTester
-                while (ProxyTester.Proxies.Count > 0)
-                    Thread.Sleep(1);
+                await ProxyTester.TestListAsync(input, output, threads, timeout);
+                Database.WriteOrderedList();
             }
             catch (Exception e)
             {

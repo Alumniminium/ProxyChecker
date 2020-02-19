@@ -40,3 +40,8 @@ The IP starts at string index 8 on every line - you could use
 8.19.55.12:8080
 ```
 on Unix.
+
+
+# Attrib
+
+IP2Location Parser from  http://www.skyland.tw/
