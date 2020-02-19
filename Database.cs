@@ -15,7 +15,7 @@ namespace SockPuppet
         private static ConcurrentDictionary<string, List<Proxy>> OrderedProxies = new ConcurrentDictionary<string, List<Proxy>>();
         private static IpLocator Locator = new BinaryDbClient("Assets/ipdb.bin");
 
-        public static void LoadProxyList(string inputPath)
+        public static void LoadProxyList(string inputPath, int timeout)
         {
             using var Reader = new StreamReader(inputPath);
 
@@ -31,7 +31,7 @@ namespace SockPuppet
                 if (!ushort.TryParse(parts[1], out var port))
                     continue;
 
-                var proxy = new Proxy(ipa, port);
+                var proxy = new Proxy(ipa, port, timeout);
 
                 if (Database.IsUnique(proxy))
                     ProxyTester.Enqueue(proxy);

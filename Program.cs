@@ -5,8 +5,6 @@ namespace SockPuppet
 {
     public class Program
     {
-        public static int Timeout { get; internal set; }
-
         public static void Main(string[] args)
         {
             if (args.Length == 0) // helps with debugging
@@ -23,8 +21,7 @@ namespace SockPuppet
             try
             {
                 var (input, output, threads, timeout) = ParseInput(args);
-                Timeout = timeout;
-                Database.LoadProxyList(input);
+                Database.LoadProxyList(input, timeout);
                 ProxyTester.StartThreads(threads);
                 Database.ExportIni(output);
             }
