@@ -10,6 +10,7 @@ namespace SockPuppet
         public bool Alive;
         internal bool Safe => _responseWithoutProxy == response;
         public string response;
+        public string Country;
         private static string _responseWithoutProxy = new WebClient().DownloadString("https://her.st").Trim();
 
         public Proxy(IPAddress ip, ushort port)
@@ -37,9 +38,13 @@ namespace SockPuppet
         {
             var webProxy = new WebProxy(proxy.IP.ToString(), proxy.Port);
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://her.st");
-            webProxy.BypassProxyOnLocal = false; // this is gonna run on the her.st server
+            webProxy.BypassProxyOnLocal = false; // only needed if you run on the same host as the website you test against. I do.
             request.Proxy = webProxy;
-            //request.UserAgent = "ProxyTester Version: 1";
+            request.Timeout = Program.Timeout;
+            /// some proxies will not work if you set a User Agent. 
+            /// Curious, cause even if I set it to my browser's UA string, they strill refuse it.
+            //request.UserAgent = "ProxyTester Version: 1"; 
+
             return request;
         }
 

@@ -17,8 +17,6 @@ namespace SockPuppet
 
         public static void LoadProxyList(string inputPath)
         {
-            int lineCounter = 0;
-            int duplicateCounter = 0;
             using var Reader = new StreamReader(inputPath);
 
             while (!Reader.EndOfStream)
@@ -37,38 +35,38 @@ namespace SockPuppet
 
                 if (Database.IsUnique(proxy))
                     ProxyTester.Enqueue(proxy);
-                else
-                    duplicateCounter++;
-
-                lineCounter++;
             }
-            RemoveDuplicatesAndSave(inputPath, duplicateCounter);
+            RemoveDuplicatesAndSave(inputPath);
         }
 
-        private static void RemoveDuplicatesAndSave(string inputPath, int duplicateCounter)
+        public static void AddToSortedList(Proxy proxy)
         {
-            Console.WriteLine($"Removing Duplicates: {duplicateCounter}");
+            if (!OrderedProxies.ContainsKey(proxy.Country))
+                OrderedProxies.TryAdd(proxy.Country, new List<Proxy>());
+
+            OrderedProxies[proxy.Country].Add(proxy);
+        }
+
+        private static void RemoveDuplicatesAndSave(string inputPath)
+        {
             using var writer = new StreamWriter(File.Create(inputPath));
-            foreach (var kvp in KnownProxies.OrderBy(c => c.Key))
+            foreach (var (ip, proxyPorts) in KnownProxies.OrderBy(c => c.Key))
             {
-                foreach (var port in kvp.Value)
-                {
-                    writer.WriteLine(IpHelper.IntToIp(kvp.Key) + ":" + port);
-                }
+                foreach (var port in proxyPorts)
+                    writer.WriteLine(IpHelper.IntToIp(ip) + ":" + port);
             }
         }
 
         private static bool IsUnique(Proxy proxy)
         {
             var bytes = proxy.IP.GetAddressBytes();
-            var uid = BitConverter.ToUInt32(bytes);
+            var ip = BitConverter.ToUInt32(bytes);
+            //faster AND more RAM efficient to store the IP as integer
 
-            if (KnownProxies.TryGetValue(uid, out var list))
-            {
-                if (list.Contains(proxy.Port))
-                    return false;
-            }
-            return KnownProxies.TryAdd(uid, new List<ushort> { proxy.Port });
+            if (KnownProxies.TryGetValue(ip, out var list))
+                return !list.Contains(proxy.Port);
+
+            return KnownProxies.TryAdd(ip, new List<ushort> { proxy.Port });
         }
         public static void Locate(Proxy proxy)
         {
@@ -78,23 +76,20 @@ namespace SockPuppet
             if (string.IsNullOrEmpty(country))
                 country = "Unknown";
 
-            if (!OrderedProxies.ContainsKey(country))
-                OrderedProxies.TryAdd(country, new List<Proxy>());
-
-            OrderedProxies[country].Add(proxy);
+            proxy.Country = country;
         }
-        internal static void ExportIni(string output)
+        public static void ExportIni(string output)
         {
             using var writer = new StreamWriter(output);
-            foreach (var country in OrderedProxies.OrderByDescending(kvp => kvp.Key))
+            foreach (var (country, proxies) in OrderedProxies.OrderByDescending(kvp => kvp.Key))
             {
-                writer.WriteLine($"[{country.Key}]");
+                writer.WriteLine($"[{country}]");
                 string working = "Online=";
                 string offline = "Offline=";
 
-                foreach (var ip in country.Value.Where(c => c.Alive))
+                foreach (var ip in proxies.Where(c => c.Alive))
                     working += ip + ",";
-                foreach (var ip in country.Value.Where(c => !c.Alive))
+                foreach (var ip in proxies.Where(c => !c.Alive))
                     offline += ip + ",";
 
                 writer.WriteLine(working.AsSpan().Slice(0, working.Length - 1));

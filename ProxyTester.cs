@@ -1,25 +1,18 @@
 using System;
 using System.Threading;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace SockPuppet
 {
     public static class ProxyTester
     {
         private static Thread[] Threads;
-        private static BlockingCollection<Proxy> Proxies;
-        private static int Timeout;
-
-        public static void LoadProxyList(string inputPath, int timeout)
-        {
-            Timeout = timeout;
-            Proxies = new BlockingCollection<Proxy>();
-            Database.LoadProxyList(inputPath);
-        }
+        private static BlockingCollection<Proxy> Proxies = new BlockingCollection<Proxy>();
 
         public static void StartThreads(int threadCount)
         {
-            Threads = new Thread[threadCount + 1];
+            Threads = new Thread[threadCount];
             for (int i = 0; i < threadCount; i++)
             {
                 Threads[i] = new Thread(WorkLoop);
@@ -37,6 +30,7 @@ namespace SockPuppet
                 proxy.PerformTest(proxy);
                 Console.WriteLine($"{(proxy.Alive ? "[ Up! ]" : "[Down!]")}{proxy}");
                 Database.Locate(proxy);
+                Database.AddToSortedList(proxy);
             }
         }
     }
