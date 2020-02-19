@@ -11,37 +11,42 @@ namespace SockPuppet
 {
     public static class Database
     {
-        public static ConcurrentDictionary<uint, List<ushort>> KnownProxies = new ConcurrentDictionary<uint, List<ushort>>();
-        public static ConcurrentDictionary<string, List<Proxy>> OrderedProxies = new ConcurrentDictionary<string, List<Proxy>>();
-        public static IpLocator Locator = new BinaryDbClient("Assets/ipdb.bin");
+        private static ConcurrentDictionary<uint, List<ushort>> KnownProxies = new ConcurrentDictionary<uint, List<ushort>>();
+        private static ConcurrentDictionary<string, List<Proxy>> OrderedProxies = new ConcurrentDictionary<string, List<Proxy>>();
+        private static IpLocator Locator = new BinaryDbClient("Assets/ipdb.bin");
 
-        public static void Load(string inputPath, TaskCompletionSource<int> tcs)
+        public static void LoadProxyList(string inputPath)
         {
             int lineCounter = 0;
             int duplicateCounter = 0;
+            using var Reader = new StreamReader(inputPath);
 
-            using (var Reader = new StreamReader(inputPath))
+            while (!Reader.EndOfStream)
             {
-                while (!Reader.EndOfStream)
-                {
-                    var line = Reader.ReadLine().Trim();
-                    var parts = line.Split(':');
+                var line = Reader.ReadLine().Trim();
+                var parts = line.Split(':');
 
-                    if (parts.Length != 2)
-                        continue;
+                if (parts.Length != 2)
+                    continue;
+                if (!IPAddress.TryParse(parts[0], out var ipa))
+                    continue;
+                if (!ushort.TryParse(parts[1], out var port))
+                    continue;
 
-                    if (!IPAddress.TryParse(parts[0], out var ipa) || !ushort.TryParse(parts[1], out var port))
-                        continue;
+                var proxy = new Proxy(ipa, port);
 
-                    var proxy = new Proxy(ipa, port);
-                    if (Database.IsUnique(proxy))
-                        ProxyTester.Proxies.Add(proxy);
-                    else
-                        duplicateCounter++;
+                if (Database.IsUnique(proxy))
+                    ProxyTester.Enqueue(proxy);
+                else
+                    duplicateCounter++;
 
-                    lineCounter++;
-                }
+                lineCounter++;
             }
+            RemoveDuplicatesAndSave(inputPath, duplicateCounter);
+        }
+
+        private static void RemoveDuplicatesAndSave(string inputPath, int duplicateCounter)
+        {
             Console.WriteLine($"Removing Duplicates: {duplicateCounter}");
             using var writer = new StreamWriter(File.Create(inputPath));
             foreach (var kvp in KnownProxies.OrderBy(c => c.Key))
@@ -51,7 +56,6 @@ namespace SockPuppet
                     writer.WriteLine(IpHelper.IntToIp(kvp.Key) + ":" + port);
                 }
             }
-            tcs.SetResult(lineCounter);
         }
 
         private static bool IsUnique(Proxy proxy)
@@ -66,7 +70,7 @@ namespace SockPuppet
             }
             return KnownProxies.TryAdd(uid, new List<ushort> { proxy.Port });
         }
-        public static void Trace(Proxy proxy)
+        public static void Locate(Proxy proxy)
         {
             var location = Locator.Locate(proxy.IP);
             var country = location.Country;
@@ -79,9 +83,9 @@ namespace SockPuppet
 
             OrderedProxies[country].Add(proxy);
         }
-        internal static void WriteOrderedList()
+        internal static void ExportIni(string output)
         {
-            using var writer = new StreamWriter("test.txt");
+            using var writer = new StreamWriter(output);
             foreach (var country in OrderedProxies.OrderByDescending(kvp => kvp.Key))
             {
                 writer.WriteLine($"[{country.Key}]");
