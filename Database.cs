@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Generic;
 using System;
@@ -15,30 +14,6 @@ namespace SockPuppet
         private static ConcurrentDictionary<string, List<Proxy>> OrderedProxies = new ConcurrentDictionary<string, List<Proxy>>();
         private static IpLocator Locator = new BinaryDbClient("Assets/ipdb.bin");
 
-        public static void LoadProxyList(string inputPath, int timeout)
-        {
-            using var Reader = new StreamReader(inputPath);
-
-            while (!Reader.EndOfStream)
-            {
-                var line = Reader.ReadLine().Trim();
-                var parts = line.Split(':');
-
-                if (parts.Length != 2)
-                    continue;
-                if (!IPAddress.TryParse(parts[0], out var ipa))
-                    continue;
-                if (!ushort.TryParse(parts[1], out var port))
-                    continue;
-
-                var proxy = new Proxy(ipa, port, timeout);
-
-                if (Database.IsUnique(proxy))
-                    ProxyTester.Enqueue(proxy);
-            }
-            RemoveDuplicatesAndSave(inputPath);
-        }
-
         public static void AddToSortedList(Proxy proxy)
         {
             if (!OrderedProxies.ContainsKey(proxy.Country))
@@ -46,18 +21,7 @@ namespace SockPuppet
 
             OrderedProxies[proxy.Country].Add(proxy);
         }
-
-        private static void RemoveDuplicatesAndSave(string inputPath)
-        {
-            using var writer = new StreamWriter(File.Create(inputPath));
-            foreach (var (ip, proxyPorts) in KnownProxies.OrderBy(c => c.Key))
-            {
-                foreach (var port in proxyPorts)
-                    writer.WriteLine(IpHelper.IntToIp(ip) + ":" + port);
-            }
-        }
-
-        private static bool IsUnique(Proxy proxy)
+        public static bool IsUnique(Proxy proxy)
         {
             var bytes = proxy.IP.GetAddressBytes();
             var ip = BitConverter.ToUInt32(bytes);

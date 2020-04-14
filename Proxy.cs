@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Net;
 
@@ -31,7 +32,7 @@ namespace SockPuppet
                 proxy.response = reader.ReadToEnd();
                 proxy.Alive = true;
             }
-            catch
+            catch (Exception r)
             {
                 proxy.Alive = false;
             }
